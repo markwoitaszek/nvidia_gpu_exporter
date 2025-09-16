@@ -1,0 +1,56 @@
+groups:
+  - name: gpu_alerts
+    rules:
+      - alert: GPUTemperatureHigh
+        expr: nvidia_smi_temperature_gpu > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "GPU temperature is high"
+          description: "GPU {{ $labels.uuid }} temperature is {{ $value }}°C"
+
+      - alert: GPUTemperatureCritical
+        expr: nvidia_smi_temperature_gpu > 90
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "GPU temperature is critical"
+          description: "GPU {{ $labels.uuid }} temperature is {{ $value }}°C"
+
+      - alert: GPUPowerDrawHigh
+        expr: nvidia_smi_power_draw_watts > 300
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "GPU power draw is high"
+          description: "GPU {{ $labels.uuid }} is drawing {{ $value }}W"
+
+      - alert: GPUMemoryUsageHigh
+        expr: (nvidia_smi_memory_used_bytes / nvidia_smi_memory_total_bytes) * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "GPU memory usage is high"
+          description: "GPU {{ $labels.uuid }} memory usage is {{ $value }}%"
+
+      - alert: GPUUtilizationHigh
+        expr: nvidia_smi_utilization_gpu_ratio * 100 > 95
+        for: 10m
+        labels:
+          severity: info
+        annotations:
+          summary: "GPU utilization is high"
+          description: "GPU {{ $labels.uuid }} utilization is {{ $value }}%"
+
+      - alert: GPUExporterDown
+        expr: up{job="nvidia_gpu_exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "NVIDIA GPU Exporter is down"
+          description: "NVIDIA GPU Exporter has been down for more than 1 minute"
